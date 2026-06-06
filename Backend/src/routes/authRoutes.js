@@ -3,6 +3,7 @@
 const express = require("express")
 const router = express.Router()
 const passport = require("passport")
+const jwt = require("jsonwebtoken")
 
 // google OAuth login route - google redirects interviewer to google
 router.get("/google",
@@ -20,13 +21,33 @@ router.get("/google/callback",
         // if google authentication fails
         failureRedirect:"/"
     }),
-    // if authentication succeeds
-    (req,res) =>{
-        //temporary res
-        res.json({
-            message: "Google authentication successful",
-            user: req.user
-        })
+    // if authentication succeeds -callback function
+    async (req,res) =>{
+        try{
+            //generating jwt token
+            const token = jwt.sign(
+                {id: req.user._id,
+                 email: req.user.email
+                },process.env.JWT_SECRET,
+                {
+                    expiresIn:"7d"
+                }
+            )
+            //sending response
+            res.status(200).json({
+                message: "Google Authentication Successful",
+                token,
+                user:{
+                    id: req.user._id,
+                    name: req.user.name,
+                    email: req.user.email
+                }
+            })
+        }catch(err){
+            res.status(500).json({
+                message: err.message
+            })
+        }
     }
 )
 
