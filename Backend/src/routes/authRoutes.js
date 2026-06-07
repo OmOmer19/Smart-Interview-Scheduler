@@ -9,7 +9,11 @@ const jwt = require("jsonwebtoken")
 router.get("/google",
     passport.authenticate("google",{
         // request access to profile info and email address from google
-        scope: ["profile","email"]
+        scope: ["profile","email"],
+        // accesstype: offline -> tell google we need refresh token
+        accessType: "offline",
+        // prompt: 'consent' -> forces google to show consent screen so refresh token is returned again
+        prompt: "consent"
     })
 )
 

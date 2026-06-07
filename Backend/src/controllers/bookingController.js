@@ -1,6 +1,10 @@
 const Slot = require("../models/slotModel")
 const Booking = require("../models/bookingModel")
 const crypto = require("crypto")
+const User = require("../models/userModel")
+
+//importing calender services
+const { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } = require("../services/calendarService")
 
 // function to book a slot
 const bookSlot = async(req,res) =>{
@@ -17,7 +21,7 @@ const bookSlot = async(req,res) =>{
         const slot = await Slot.findOneAndUpdate(
             {_id: slotId, status: "available"},
             { $set: {status: "booked"}},
-            {new: true}
+            {returnDocument: "after" }
         )
         // if slot not found or already booked
         if(!slot){
@@ -37,6 +41,20 @@ const bookSlot = async(req,res) =>{
             note: note || "",
             actionToken
         })
+        // creating google calender event after booking success
+        const interviewer = await User.findById(slot.interviewer)
+
+        const calendarEvent = await createCalendarEvent(
+            interviewer,
+            candidateEmail,
+            candidateName,
+            slot.startTime,
+            slot.endTime
+        )
+        // updating boooking with calender event id
+        booking.calendarEventId = calendarEvent.id
+        // saving 
+        await booking.save()
         //sending res
         return res.status(201).json({
             message: "Slot booked successfully",
@@ -78,7 +96,7 @@ const getInterviewerBookings = async(req,res) =>{
 // function to get bookings by candidate email
 const getCandidateBookings = async (req, res) => {
     try{
-        const {email} = req.query
+        const {email} = req.params
         if(!email){
             return res.status(400).json({
                 message: "Email is required"
@@ -110,7 +128,7 @@ const cancelBooking = async(req,res) =>{
         // getting booking id from req params
         const {bookingId} = req.params
         // finding booking
-        const booking = await Booking.findById({bookingId})
+        const booking = await Booking.findById(bookingId)
         if(!booking){
             return res.status(404).json({
                 message: "Booking not found"
@@ -126,13 +144,22 @@ const cancelBooking = async(req,res) =>{
         booking.status = "cancelled"
         await booking.save()
 
+        // getting interviewer
+        const Interviewer = await User.findById(booking.interviewer)
+
+        // removing google calendar event using service function
+        await deleteCalendarEvent(
+            interviewer,
+            booking.calendarEventId
+        )
+
         // releasing the slot
         await Slot.findByIdAndUpdate(
             booking.slot,
             {$set: {status: "available"}}
         )
         // sending res
-        return res.status.json({
+        return res.status(200).json({
             message: "Booking cancelled successfully"
         })
     }
@@ -143,4 +170,77 @@ const cancelBooking = async(req,res) =>{
     }
 }
 
-module.exports = {bookSlot, getInterviewerBookings, getCandidateBookings, cancelBooking}
+// function to reschedule booking
+const rescheduleBooking = async (req, res) =>{
+    try{
+        // getting booking id and new slotid
+        const {bookingId} = req.params
+        const {newSlotId} = req.body
+
+        if(!newSlotId){
+            return res.status(400).json({
+                message: "New slot id is required"
+            })
+        }
+        // finding booking
+        const booking = await Booking.findById(bookingId)
+        if(!booking){
+            return res.status(404).json({
+                message:"Booking not found"
+            })
+        }
+        // storing old slot before changing
+        const oldSlotId = booking.slot
+        // locking new slot automatically
+        const newSlot = await Slot.findOneAndUpdate(
+            {
+                _id: newSlotId,
+                status: "available"
+            },{
+                $set:{ status: "booked"}
+            },{
+                returnDocument: "after" 
+            }
+        )
+        // if no new slot available
+        if(!newSlot){
+            return res.status(409).json({
+                message: "Selected slot is unavailable"
+            })
+        }
+        // releasing old slot
+        await Slot.findByIdAndUpdate(oldSlotId,
+            {$set:
+                { status: "available"}
+            }
+        )
+        // updating booking
+        booking.slot = newSlot._id
+        booking.status = "rescheduled"
+        // saving booking
+        await booking.save()
+
+        // getting interviewer
+        const interviewer = await User.findById(booking.interviewer)
+
+        // updating google calander event
+        await updateCalendarEvent(
+            interviewer,
+            booking.calendarEventId,
+            newSlot
+        )
+
+        //sending res
+        return res.status(200).json({
+            message: "Booking rescheduled successfully",
+            booking
+        })
+    }
+    catch(err){
+        return res.status(500).json({
+            message: err.message
+        })
+    }
+}
+
+module.exports = {bookSlot, getInterviewerBookings, getCandidateBookings, cancelBooking, rescheduleBooking}
