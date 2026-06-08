@@ -6,6 +6,15 @@ const User = require("../models/userModel")
 //importing calender services
 const { createCalendarEvent, deleteCalendarEvent, updateCalendarEvent } = require("../services/calendarService")
 
+// importing gmail services
+const {sendBookingConfirmationToCandidate,sendBookingConfirmationToInterviewer,
+      sendCancellationToCandidate, sendCancellationToInterviewer,
+      sendRescheduleConfirmationToCandidate,sendRescheduleConfirmationToInterviewer
+      } = require("../services/gmailService")
+
+const {createNotification} = require("../services/notificationService")
+
+
 // function to book a slot
 const bookSlot = async(req,res) =>{
     try{
@@ -55,6 +64,24 @@ const bookSlot = async(req,res) =>{
         booking.calendarEventId = calendarEvent.id
         // saving 
         await booking.save()
+        
+        // sending confirmation emails to both candidate and interviewer
+        // using promise.all to send both emails simultaneously
+        Promise.all([
+            sendBookingConfirmationToCandidate(interviewer,booking, slot),
+            sendBookingConfirmationToInterviewer(interviewer, booking, slot)
+        ])
+        .catch(err => console.error("Booking email failed:", err.message))
+
+        // sending real time notification to interviewer
+        /// new_booking type so frontend show correct icon
+        await createNotification(
+            slot.interviewer,
+            `New booking by ${candidateName}`,
+            "new_booking",
+            booking._id
+        )
+
         //sending res
         return res.status(201).json({
             message: "Slot booked successfully",
@@ -145,7 +172,10 @@ const cancelBooking = async(req,res) =>{
         await booking.save()
 
         // getting interviewer
-        const Interviewer = await User.findById(booking.interviewer)
+        const interviewer = await User.findById(booking.interviewer)
+
+        // fetching slot details for email
+        const slot = await Slot.findById(booking.slot)
 
         // removing google calendar event using service function
         await deleteCalendarEvent(
@@ -158,6 +188,21 @@ const cancelBooking = async(req,res) =>{
             booking.slot,
             {$set: {status: "available"}}
         )
+
+        // sending cacellation emails to both candidate and interviewe
+        Promise.all([
+            sendCancellationToCandidate(interviewer, booking, slot),
+            sendCancellationToInterviewer(interviewer, booking, slot)
+        ]).catch(err => console.error("Cancellation email failed:", err.message))
+
+        // notifying interviewer about cancellation in real time
+        await createNotification(
+            booking.interviewer,
+            `Booking cancelled by ${booking.candidateName}`,
+            "cancellation",
+            booking._id
+        )
+
         // sending res
         return res.status(200).json({
             message: "Booking cancelled successfully"
@@ -228,6 +273,20 @@ const rescheduleBooking = async (req, res) =>{
             interviewer,
             booking.calendarEventId,
             newSlot
+        )
+
+        // sending reschedule emails to both candidate and interviewer
+        Promise.all([
+            sendRescheduleConfirmationToCandidate(interviewer, booking, newSlot),
+            sendRescheduleConfirmationToInterviewer(interviewer, booking, newSlot)
+        ]).catch(err => console.error("Reschedule email failed:", err.message))
+
+        // sending notification to interviewer about reschedule in real time
+        await createNotification(
+            booking.interviewer,
+            `Booking rescheduled by ${booking.candidateName}`,
+            "reschedule",
+            booking._id
         )
 
         //sending res

@@ -22,10 +22,9 @@ passport.use(
             const name = profile.displayName
             const email = profile.emails[0].value
 
-            //  LOGS in console
-            console.log("Access Token:", accessToken)
-            console.log("Refresh Token:", refreshToken)
-            console.log("Profile:", profile.displayName)
+            if(!email){
+                return done(new Error("No email from google"), null)
+            }
             
             //if user already
             let user = await User.findOne({googleId})

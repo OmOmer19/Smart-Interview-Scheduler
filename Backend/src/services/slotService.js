@@ -98,7 +98,7 @@ const generateSlotsForInterviewer = async(interviewerId) =>{
     }
     catch(err){
         // Error handling for debugging
-        console.error("Slot generation error:", error.message)
+        console.error("Slot generation error:", err.message)
     }
 }
 

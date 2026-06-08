@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-const { applyTimestamps } = require("./userModel")
 
 // availability rule model
 const availabilitySchema = new mongoose.Schema(
