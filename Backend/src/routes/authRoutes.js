@@ -25,7 +25,7 @@ router.get("/google/callback",
         // if google authentication fails
         failureRedirect:"/"
     }),
-    // if authentication succeeds -callback function
+    // if authentication succeeds -callback function - redirect to frontend with token in URL
     async (req,res) =>{
         try{
             //generating jwt token
@@ -37,20 +37,16 @@ router.get("/google/callback",
                     expiresIn:"7d"
                 }
             )
-            //sending response
-            res.status(200).json({
-                message: "Google Authentication Successful",
-                token,
-                user:{
-                    id: req.user._id,
-                    name: req.user.name,
-                    email: req.user.email
-                }
-            })
-        }catch(err){
-            res.status(500).json({
-                message: err.message
-            })
+            // redirecting to frontend with token and user info in query params
+            res.redirect(
+                `${process.env.FRONTEND_URL}/auth/callback?token=${token}&id=${req.user._id}
+                &name=${encodeURIComponent(req.user.name)}&email=${encodeURIComponent(req.user.email)}`
+            )
+        }
+        catch(err){
+            res.redirect(
+                res.redirect(`${process.env.FRONTEND_URL}/?error=auth_failed`)
+            )
         }
     }
 )
