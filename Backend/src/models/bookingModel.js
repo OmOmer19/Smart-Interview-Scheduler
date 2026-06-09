@@ -31,7 +31,7 @@ const bookingSchema = new mongoose.Schema(
         // booking status lifecycle
         status:{
             type: String,
-            enum: ["confirmed", "cancelled", "completed", "rescheduled"],
+            enum: ["confirmed", "cancelled", "completed", "rescheduled", "no-show"],
             default: "confirmed"
         },
         // Google Calendar event ID (will be used later)
