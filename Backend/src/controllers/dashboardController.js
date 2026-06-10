@@ -1,4 +1,5 @@
 // to get dashboard stats for interviewer
+const mongoose = require("mongoose")
 const Booking = require("../models/bookingModel")
 const Slot = require("../models/slotModel")
 
@@ -15,7 +16,7 @@ const getStats = async(req, res) => {
         // all time slot counts by status
         const allTimeSlots = await Slot.aggregate([
             //filtering slots belonging to this interviewe only
-            { $match: {interviewer: interviewerId}},
+            { $match: {interviewer: new mongoose.Types.ObjectId(interviewerId)}},
             //grouping by status and counting each
             { $group: {_id: "$status", count : { $sum: 1}}}
         ])
@@ -23,7 +24,7 @@ const getStats = async(req, res) => {
         const monthSlots = await Slot.aggregate([
             // filtering by interviewer and curr month
             { $match: {
-                interviewer: interviewerId,
+                interviewer:new mongoose.Types.ObjectId(interviewerId),
                 createdAt: {$gte: startOfMonth, $lte: endOfMonth}
             }},
             { $group: {_id: "$status", count: {$sum: 1} } }

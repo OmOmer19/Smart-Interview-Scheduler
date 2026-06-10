@@ -9,7 +9,13 @@ const jwt = require("jsonwebtoken")
 router.get("/google",
     passport.authenticate("google",{
         // request access to profile info and email address from google
-        scope: ["profile","email"],
+        scope: [
+            "profile",
+            "email",
+            // adding calendar and gmail scopes
+            "https://www.googleapis.com/auth/calendar",
+            "https://www.googleapis.com/auth/gmail.send"
+        ],
         // accesstype: offline -> tell google we need refresh token
         accessType: "offline",
         // prompt: 'consent' -> forces google to show consent screen so refresh token is returned again
@@ -39,14 +45,11 @@ router.get("/google/callback",
             )
             // redirecting to frontend with token and user info in query params
             res.redirect(
-                `${process.env.FRONTEND_URL}/auth/callback?token=${token}&id=${req.user._id}
-                &name=${encodeURIComponent(req.user.name)}&email=${encodeURIComponent(req.user.email)}`
+                `${process.env.FRONTEND_URL}/auth/callback?token=${token}&id=${req.user._id}&name=${encodeURIComponent(req.user.name)}&email=${encodeURIComponent(req.user.email)}`
             )
         }
         catch(err){
-            res.redirect(
                 res.redirect(`${process.env.FRONTEND_URL}/?error=auth_failed`)
-            )
         }
     }
 )
