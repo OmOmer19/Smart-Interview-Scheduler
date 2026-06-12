@@ -53,5 +53,19 @@ router.get("/google/callback",
         }
     }
 )
+// public route - get all interviewers list
+router.get("/interviewers", async (req, res) => {
+    try {
+        const User = require("../models/userModel")
+        // only returning public info - no tokens
+        const interviewers = await User.find({}, "name email _id")
+        return res.status(200).json({
+            message: "Interviewers fetched successfully",
+            interviewers
+        })
+    } catch (err) {
+        return res.status(500).json({ message: err.message })
+    }
+})
 
 module.exports = router
