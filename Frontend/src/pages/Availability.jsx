@@ -36,6 +36,7 @@ function Availability(){
     ]
     // fetching slots
     useEffect(() => {
+        
         const fetchSlots = async() => {
             try{
                 // using logged in user id to fetch their slots
@@ -131,7 +132,7 @@ function Availability(){
                         <label className="text-gray-400 text-xs mb-3 block">
                             Days of week
                         </label>
-                        <div className="flex-gap-2">
+                        <div className="flex gap-2">
                             {days.map((day) => (
                                 <button key={day.value}
                                         onClick={() => handleDayToggle(day.value)}
@@ -201,7 +202,7 @@ function Availability(){
                             className="bg-blue-600 hover:bg-blue-500 disabled:bg-blue-800 disabled:cursor-not-allowed 
                                        text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors cursor-pointer"
                     >
-                        Save & generate slots
+                        {submitting ? 'Saving...': 'Save & generate slots'}
                     </button>
                 </div>
                 {/* slots list */}
