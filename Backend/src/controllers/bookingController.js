@@ -149,6 +149,22 @@ const getCandidateBookings = async (req, res) => {
     }
 }
 
+// function to get single booking by id
+const getBookingById = async (req, res) => {
+    try{
+        const {bookingId} = req.params
+        // populating slot to get time details
+        const booking = await Booking.findById(bookingId).populate("slot")
+        if(!booking){
+            return res.status(404).json({message: "Booking not found"})
+        }
+        return res.status(200).json({ booking })
+    }
+    catch(err){
+        return res.status(500).json({ message: err.message })
+    }
+}
+
 // function to cancel book and release slot
 const cancelBooking = async(req,res) =>{
     try{
@@ -302,4 +318,6 @@ const rescheduleBooking = async (req, res) =>{
     }
 }
 
-module.exports = {bookSlot, getInterviewerBookings, getCandidateBookings, cancelBooking, rescheduleBooking}
+module.exports = {bookSlot, getInterviewerBookings, getCandidateBookings,
+                  getBookingById, cancelBooking, rescheduleBooking
+                }

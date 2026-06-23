@@ -44,11 +44,11 @@ const sendBookingConfirmationToCandidate = async(interviewer, booking, slot) =>{
     // creating email subject using interview date
     const subject = `Interview Confirmed - ${new Date(slot.startTime).toDateString()}`
     
-    // generating secure action links using token stored in booking 
+    // generating secure action links using booking id
     // it will allow candidate to cancel or reschedule without login
-    // const cancelLink = `${process.env.FRONTEND_URL}/cancel/${booking.actionToken}`
+    const cancelLink = `${process.env.FRONTEND_URL}/cancel/${booking._id}`
     
-    // const rescheduleLink = `${process.env.FRONTEND_URL}/reschedule/${booking.actionToken}`
+    const rescheduleLink = `${process.env.FRONTEND_URL}/reschedule/${booking._id}`
 
     // html email body
     const html = `
@@ -61,11 +61,12 @@ const sendBookingConfirmationToCandidate = async(interviewer, booking, slot) =>{
     </ul>
     <p>You will receive a Google Calendar invite separately.</p>
     <br/>
+    
+    <a href="${cancelLink}">Cancel Booking</a> &nbsp;|&nbsp; 
+    <a href="${rescheduleLink}">Reschedule</a>
     `
-    //action link will be added after the br tag
-    // <a href="${cancelLink}">Cancel Booking</a> &nbsp;|&nbsp;
-    // <a href="${rescheduleLink}">Reschedule</a>
-
+    
+   
     // sending email to candidate
     await sendEmail(interviewer, booking.candidateEmail, subject, html)
 }
