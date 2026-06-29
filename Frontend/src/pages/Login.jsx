@@ -11,9 +11,9 @@ function Login(){
     return (
         <div className='min-h-screen bg-gray-950 flex items-center justify-center p-4'>
             {/* main card - splitting into two left and right */}
-            <div className='w-full max-w-5xl bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden flex min-h-[600px]'>
+            <div className='w-full max-w-5xl bg-gray-900 rounded-2xl border border-gray-800 overflow-hidden flex flex-col md:flex-row min-h-[600px]'>
                 {/*LEFT SIDE - login panel*/}
-                <div className="flex-1 p-12 flex flex-col justify-between border-r border-gray-800">
+                <div className="flex-1 p-8 md:p-12 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-800">
                     {/*logo */}
                     <div className='flex items-center gap-3'>
                         <div className='w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center'>
@@ -68,7 +68,7 @@ function Login(){
                     </p>
                 </div>
                 {/* RIGHT SIDE - static dashboard preview (mock data) */}
-                <div className='flex-1 p-8 bg-gray-950 flex flex-col gap-4 overflow-y-auto'>
+                <div className='hidden md:flex flex-1 p-8 bg-gray-950 flex-col gap-4 overflow-y-auto'>
                     {/* section label */}
                     <span className='text-gray-600 text-xs font-semibold tracking-widest uppercase'>
                         Live dashboard preview

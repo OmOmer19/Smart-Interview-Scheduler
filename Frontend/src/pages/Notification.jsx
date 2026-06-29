@@ -116,13 +116,13 @@ function Notification(){
     return(
         <div className="flex min-h-screen bg-gray-950">
             {/* toaster notifications */}
-            <Toaster position="bottom-right" />
+            <Toaster position="top-center" />
             {/* sidebar with unread count */}
             <SideBar unreadCount={unreadCount} />
             {/* main content */}
-            <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 p-4 md:p-8 overflow-y-auto">
                 {/* header */}
-                <div className="flex items-center justify-between mb-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-8">
                 <div>
                     <h1 className="text-white text-2xl font-medium">
                         Notifications

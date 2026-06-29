@@ -151,8 +151,8 @@ function SlotBooking(){
     }
 
     return(
-        <div className="min-h-screen bg-gray-950 p-6">
-            <Toaster position="bottom-right" />
+        <div className="min-h-screen bg-gray-950 p-4 md:p-6">
+            <Toaster position="top-center" />
             <div className="max-w-4xl mx-auto">
                 {/* header */}
                 <div className="flex items-center gap-3 mb-8">
@@ -197,7 +197,7 @@ function SlotBooking(){
                         </div>
                     ) : (
                         // slots grid
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
                                 <button key={slot._id}
                                    onClick={() => setSelectedSlot(slot)}

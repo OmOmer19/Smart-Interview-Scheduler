@@ -39,8 +39,8 @@ function Booking(){
     )
 
     return(
-        <div className="min-h-screen bg-gray-950 p-6">
-            <Toaster position="bottom-right" />
+        <div className="min-h-screen bg-gray-950 p-4 md:p-6">
+            <Toaster position="top-center" />
 
             <div className="max-w-2xl mx-auto">
 

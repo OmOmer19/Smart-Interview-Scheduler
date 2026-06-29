@@ -66,7 +66,7 @@ function Dashboard(){
             {/*sidebar */}
             <SideBar unreadCount={0} />
             {/* main content area */}
-            <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 p-4 md:p-8 overflow-y-auto">
                 {/*page header */}
                 <div className="mb-8">
                     <h1 className="text-white text-2xl font-medium">
@@ -77,7 +77,7 @@ function Dashboard(){
                     </p>
                 </div>
                 {/* stats  card row */}
-                <div className="grid grid-cols-4 gap-4 mb-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     {/* total slots card */}
                     <div className="bg-gray-900 border border-gray-800 rounded-xl p-5">
                         <div className="flex items-center justify-between mb-3">

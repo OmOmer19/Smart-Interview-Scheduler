@@ -8,6 +8,9 @@ import Notification from "./pages/Notification"
 import Booking from "./pages/BookingPage"
 import SlotBooking from "./pages/SlotBookingPage"
 import NotFound from "./pages/NotFound"
+import CancelPage from "./pages/CancelPage"
+import ReschedulePage from "./pages/ReschedulePage"
+
 
 function App() {
 
@@ -38,7 +41,11 @@ function App() {
           <Notification/>
         </ProtectedRoute>
       }/>
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="/cancel/:bookingId" element={<CancelPage/>}/>
+
+      <Route path="*" element={<NotFound />} />
+
+      <Route path="/reschedule/:bookingId" element={<ReschedulePage/>} />
     </Routes>
   )
 }

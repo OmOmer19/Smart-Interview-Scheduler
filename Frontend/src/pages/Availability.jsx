@@ -107,11 +107,11 @@ function Availability(){
     return(
         <div className="flex min-h-screen bg-gray-950">
             {/* toast notifications */}
-            <Toaster position="bottom-right" />
+            <Toaster position="top-center" />
             {/* sidebar */}
             <SideBar unreadCount={0} />
             {/* main content */}
-            <div className="flex-1 p-8 overflow-y-auto">
+            <div className="flex-1 p-4 md:p-8 overflow-y-auto">
                 {/* header */}
                 <div className="mb-8">
                     <h1 className="text-white text-2xl font-medium">
@@ -132,7 +132,7 @@ function Availability(){
                         <label className="text-gray-400 text-xs mb-3 block">
                             Days of week
                         </label>
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2">
                             {days.map((day) => (
                                 <button key={day.value}
                                         onClick={() => handleDayToggle(day.value)}
@@ -148,7 +148,7 @@ function Availability(){
                         </div>
                     </div>
                     {/* time inputs row */}
-                    <div className="flex gap-4 mb-5">
+                    <div className="flex flex-col md:flex-row gap-4 mb-5">
                         {/* start time */}
                         <div className="flex-1">
                             <label className="text-gray-400 text-xs mb-2 block">
@@ -228,7 +228,7 @@ function Availability(){
                         </div>
                     ) : (
                         // slots grid
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                             {slots.map((slot) => (
                                 <div key={slot._id}
                                      className="bg-gray-800 border border-gray-700 rounded-lg p-3"

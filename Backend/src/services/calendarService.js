@@ -23,6 +23,8 @@ const createCalendarEvent = async(
     const response = await calendar.events.insert({
         // primary calendar of interviewer
         calendarId: "primary",
+        // telling google to generate meet link
+        conferenceDataVersion: 1,
 
         requestBody:{
             //event title
@@ -45,7 +47,17 @@ const createCalendarEvent = async(
                 {
                     email: candidateEmail
                 }
-            ]
+            ],
+            // requesting google meet link generation
+            conferenceData:{
+                createRequest:{
+                    //unique req id to avoid duplicate meet links
+                    requestId: `interview-${Date.now()}`,
+                    conferenceSolutionKey:{
+                        type: "hangoutsMeet"
+                    }
+                }
+            }
         },
         // asking google to send invites
         sendUpdates: "all"
