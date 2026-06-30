@@ -95,8 +95,8 @@ smart-interview-scheduler/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/smart-interview-scheduler.git
-cd smart-interview-scheduler
+git clone https://github.com/OmOmer19/Smart-Interview-Scheduler.git
+cd Smart-Interview-Scheduler
 ```
 
 ### 2. Backend setup
